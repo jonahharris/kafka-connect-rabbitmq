@@ -111,6 +111,7 @@ class MessageConverter {
 
   static final Schema SCHEMA_BASIC_PROPERTIES = SchemaBuilder.struct()
       .name("com.github.jcustenborder.kafka.connect.rabbitmq.BasicProperties")
+      .optional()
       .doc("Corresponds to the [BasicProperties](https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/BasicProperties.html)")
       .field(
           FIELD_BASIC_PROPERTIES_CONTENTTYPE,
@@ -211,6 +212,11 @@ class MessageConverter {
   }
 
   static Struct basicProperties(BasicProperties basicProperties) {
+    if (null == basicProperties) {
+      log.trace("basicProperties() - basicProperties is null.");
+      return null;
+    }
+
     Map<String, Struct> headers = headers(basicProperties);
     return new Struct(SCHEMA_BASIC_PROPERTIES)
         .put(FIELD_BASIC_PROPERTIES_CONTENTTYPE, basicProperties.getContentType())

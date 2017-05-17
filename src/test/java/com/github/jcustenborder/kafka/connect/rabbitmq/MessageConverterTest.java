@@ -27,6 +27,7 @@ import java.util.Map;
 import static com.github.jcustenborder.kafka.connect.utils.AssertStruct.assertStruct;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -56,6 +57,11 @@ public class MessageConverterTest {
     assertField(input.isRedeliver(), actual, MessageConverter.FIELD_ENVELOPE_ISREDELIVER);
   }
 
+  @Test
+  public void basicPropertiesNull() {
+    Struct basicProperties = MessageConverter.basicProperties(null);
+    assertNull(basicProperties);
+  }
 
   @Test
   public void headers() {
