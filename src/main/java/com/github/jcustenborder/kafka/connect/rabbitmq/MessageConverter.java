@@ -196,18 +196,18 @@ class MessageConverter {
 
   static Map<String, Struct> headers(BasicProperties basicProperties) {
     Map<String, Object> input = basicProperties.getHeaders();
-    Map<String, Struct> results = new LinkedHashMap<>(input.size());
+    Map<String, Struct> results = new LinkedHashMap<>();
+    if (null != input) { 
+      for (Map.Entry<String, Object> kvp : input.entrySet()) {
+        log.trace("headers() - key = {}", kvp.getKey());
+        final String field = FIELD_LOOKUP.get(kvp.getValue().getClass());
+        log.trace("headers() - field = {}", field);
 
-    for (Map.Entry<String, Object> kvp : input.entrySet()) {
-      log.trace("headers() - key = {}", kvp.getKey());
-      final String field = FIELD_LOOKUP.get(kvp.getValue().getClass());
-      log.trace("headers() - field = {}", field);
-
-      Struct value = new Struct(SCHEMA_HEADER_VALUE)
-          .put(field, kvp.getValue());
-      results.put(kvp.getKey(), value);
+        Struct value = new Struct(SCHEMA_HEADER_VALUE)
+            .put(field, kvp.getValue());
+        results.put(kvp.getKey(), value);
+      }
     }
-
     return results;
   }
 
