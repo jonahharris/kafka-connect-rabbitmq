@@ -16,18 +16,29 @@
 package com.github.jcustenborder.kafka.connect.rabbitmq;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import com.rabbitmq.client.BasicProperties;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.impl.LongStringHelper;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.Struct;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static com.github.jcustenborder.kafka.connect.utils.AssertStruct.assertStruct;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -63,32 +74,68 @@ public class MessageConverterTest {
     assertNull(basicProperties);
   }
 
-  @Test
-  public void headers() {
-    final Map<String, Object> INPUT_HEADERS = ImmutableMap.of(
-        "int8", Byte.valueOf("1"),
-        "int16", Short.valueOf("1"),
-        "int32", Integer.valueOf("1"),
-        "int64", Long.valueOf("1"),
-        "string", "string"
-    );
 
-    final Map<String, Struct> expected = ImmutableMap.of(
-        "int8", new Struct(MessageConverter.SCHEMA_HEADER_VALUE).put(Schema.Type.INT8.getName(), Byte.valueOf("1")),
-        "int16", new Struct(MessageConverter.SCHEMA_HEADER_VALUE).put(Schema.Type.INT16.getName(), Short.valueOf("1")),
-        "int32", new Struct(MessageConverter.SCHEMA_HEADER_VALUE).put(Schema.Type.INT32.getName(), Integer.valueOf("1")),
-        "int64", new Struct(MessageConverter.SCHEMA_HEADER_VALUE).put(Schema.Type.INT64.getName(), Long.valueOf("1")),
-        "string", new Struct(MessageConverter.SCHEMA_HEADER_VALUE).put(Schema.Type.STRING.getName(), "string")
-    );
+  Struct struct(Schema.Type type, Object value) {
+    final String t = type.getName().toLowerCase();
+    return new Struct(MessageConverter.SCHEMA_HEADER_VALUE)
+        .put("type", t)
+        .put(t, value);
+  }
 
-    BasicProperties basicProperties = mock(BasicProperties.class);
-    when(basicProperties.getHeaders()).thenReturn(INPUT_HEADERS);
-    final Map<String, Struct> actual = MessageConverter.headers(basicProperties);
-    verify(basicProperties, only()).getHeaders();
+  static class HeaderTestCase {
+    public final Object input;
+    public final String type;
+    public final Object expected;
 
-    for(Map.Entry<String, Struct> kvp: expected.entrySet()) {
-      assertStruct(kvp.getValue(), actual.get(kvp.getKey()), kvp.getKey());
+    private HeaderTestCase(Object input, String type, Object expected) {
+      this.input = input;
+      this.type = type;
+      this.expected = expected;
     }
+
+    Struct expectedStruct() {
+      final String field = this.type.toString().toLowerCase();
+      return new Struct(MessageConverter.SCHEMA_HEADER_VALUE)
+          .put("type", field)
+          .put(field, this.expected);
+    }
+
+    @Override
+    public String toString() {
+      return String.format("%s - %s", this.type, this.input.getClass().getName());
+    }
+
+    public static final HeaderTestCase of(Object input, String type, Object expected) {
+      return new HeaderTestCase(input, type, expected);
+    }
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> headers() {
+    final List<HeaderTestCase> tests = Arrays.asList(
+        HeaderTestCase.of(Byte.valueOf("1"), Schema.Type.INT8.toString().toLowerCase(), Byte.valueOf("1")),
+        HeaderTestCase.of(Short.valueOf("1"), Schema.Type.INT16.toString().toLowerCase(), Short.valueOf("1")),
+        HeaderTestCase.of(Integer.valueOf("1"), Schema.Type.INT32.toString().toLowerCase(), Integer.valueOf("1")),
+        HeaderTestCase.of(Long.valueOf("1"), Schema.Type.INT64.toString().toLowerCase(), Long.valueOf("1")),
+        HeaderTestCase.of(Float.valueOf("1"), Schema.Type.FLOAT32.toString().toLowerCase(), Float.valueOf("1")),
+        HeaderTestCase.of(Double.valueOf("1"), Schema.Type.FLOAT64.toString().toLowerCase(), Double.valueOf("1")),
+        HeaderTestCase.of("1", Schema.Type.STRING.toString().toLowerCase(), "1"),
+        HeaderTestCase.of(LongStringHelper.asLongString("1"), Schema.Type.STRING.toString().toLowerCase(), "1"),
+        HeaderTestCase.of(new Date(1500691965123L), "timestamp", new Date(1500691965123L))
+    );
+
+    return tests.stream().map(test -> dynamicTest(test.toString(), () -> {
+      final Map<String, Object> INPUT_HEADERS = ImmutableMap.of("input", test.input);
+      BasicProperties basicProperties = mock(BasicProperties.class);
+      when(basicProperties.getHeaders()).thenReturn(INPUT_HEADERS);
+      final Map<String, Struct> actual = MessageConverter.headers(basicProperties);
+      verify(basicProperties, only()).getHeaders();
+      assertNotNull(actual, "actual should not be null.");
+      assertTrue(actual.containsKey("input"), "actual should contain key 'input'");
+      Struct actualStruct = actual.get("input");
+      actualStruct.validate();
+      assertStruct(test.expectedStruct(), actualStruct);
+    }));
   }
 
 

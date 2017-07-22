@@ -55,7 +55,7 @@
     <url>https://github.com/jcustenborder/kafka-connect-rabbitmq/issues</url>
   </issueManagement>
   <properties>
-    <rabbitmq.version>4.0.1</rabbitmq.version>
+    <rabbitmq.version>4.2.0</rabbitmq.version>
   </properties>
   <dependencies>
     <dependency>
