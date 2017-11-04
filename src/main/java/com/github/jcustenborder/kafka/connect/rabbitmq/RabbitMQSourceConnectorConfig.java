@@ -32,12 +32,12 @@ class RabbitMQSourceConnectorConfig extends RabbitMQConnectorConfig {
 
   public static final String PREFETCH_COUNT_CONF = "rabbitmq.prefetch.count";
   static final String PREFETCH_COUNT_DOC = "Maximum number of messages that the server will deliver, 0 if unlimited. " +
-      "See [Channel.basicQos(int, boolean)](https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/Channel.html#basicQos-int-boolean-)";
+      "See `Channel.basicQos(int, boolean) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/Channel.html#basicQos-int-boolean->`_";
 
   public static final String PREFETCH_GLOBAL_CONF = "rabbitmq.prefetch.global";
   static final String PREFETCH_GLOBAL_DOC = "True if the settings should be applied to the entire channel rather " +
       "than each consumer. " +
-      "See [Channel.basicQos(int, boolean)](https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/Channel.html#basicQos-int-boolean-)";
+      "See `Channel.basicQos(int, boolean) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/Channel.html#basicQos-int-boolean->`_";
 
   public final StructTemplate kafkaTopic;
   public final List<String> queues;

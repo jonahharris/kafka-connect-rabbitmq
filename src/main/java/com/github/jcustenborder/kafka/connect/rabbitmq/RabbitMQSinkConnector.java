@@ -43,12 +43,11 @@ public class RabbitMQSinkConnector extends SinkConnector {
   public void start(Map<String, String> settings) {
     this.config = new RabbitMQSinkConnectorConfig(settings);
     this.settings = settings;
-    // TODO Auto-generated method stub      
   }
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub      
+
   }
 
   @Override
