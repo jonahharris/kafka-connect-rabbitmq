@@ -24,19 +24,9 @@ and write them to a :term:`Kafka topic`.
 
 
 .. toctree::
-    :maxdepth: 1
-    :caption: Transformations:
-    :hidden:
-    :glob:
-
-    transformations/*
-
-
-.. toctree::
     :maxdepth: 0
     :caption: Schemas:
     :hidden:
 
     schemas
-
-
+    info
