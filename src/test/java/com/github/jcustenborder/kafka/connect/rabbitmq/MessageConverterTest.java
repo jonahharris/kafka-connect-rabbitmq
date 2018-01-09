@@ -16,8 +16,6 @@
 package com.github.jcustenborder.kafka.connect.rabbitmq;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import com.rabbitmq.client.BasicProperties;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.impl.LongStringHelper;

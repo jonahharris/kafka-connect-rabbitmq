@@ -49,5 +49,10 @@
             <artifactId>amqp-client</artifactId>
             <version>${rabbitmq.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.jcustenborder.kafka.connect</groupId>
+            <artifactId>connect-utils-testing-data</artifactId>
+            <version>${connect-utils.version}</version>
+        </dependency>
     </dependencies>
 </project>

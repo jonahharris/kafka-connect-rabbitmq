@@ -87,19 +87,19 @@ class MessageConverter {
     SCHEMA_HEADER_VALUE = builder.build();
   }
 
-  private static final String FIELD_BASIC_PROPERTIES_CONTENTTYPE = "contentType";
-  private static final String FIELD_BASIC_PROPERTIES_CONTENTENCODING = "contentEncoding";
-  private static final String FIELD_BASIC_PROPERTIES_HEADERS = "headers";
-  private static final String FIELD_BASIC_PROPERTIES_DELIVERYMODE = "deliveryMode";
-  private static final String FIELD_BASIC_PROPERTIES_PRIORITY = "priority";
-  private static final String FIELD_BASIC_PROPERTIES_CORRELATIONID = "correlationId";
-  private static final String FIELD_BASIC_PROPERTIES_REPLYTO = "replyTo";
-  private static final String FIELD_BASIC_PROPERTIES_EXPIRATION = "expiration";
-  private static final String FIELD_BASIC_PROPERTIES_MESSAGEID = "messageId";
-  private static final String FIELD_BASIC_PROPERTIES_TIMESTAMP = "timestamp";
-  private static final String FIELD_BASIC_PROPERTIES_TYPE = "type";
-  private static final String FIELD_BASIC_PROPERTIES_USERID = "userId";
-  private static final String FIELD_BASIC_PROPERTIES_APPID = "appId";
+  static final String FIELD_BASIC_PROPERTIES_CONTENTTYPE = "contentType";
+  static final String FIELD_BASIC_PROPERTIES_CONTENTENCODING = "contentEncoding";
+  static final String FIELD_BASIC_PROPERTIES_HEADERS = "headers";
+  static final String FIELD_BASIC_PROPERTIES_DELIVERYMODE = "deliveryMode";
+  static final String FIELD_BASIC_PROPERTIES_PRIORITY = "priority";
+  static final String FIELD_BASIC_PROPERTIES_CORRELATIONID = "correlationId";
+  static final String FIELD_BASIC_PROPERTIES_REPLYTO = "replyTo";
+  static final String FIELD_BASIC_PROPERTIES_EXPIRATION = "expiration";
+  static final String FIELD_BASIC_PROPERTIES_MESSAGEID = "messageId";
+  static final String FIELD_BASIC_PROPERTIES_TIMESTAMP = "timestamp";
+  static final String FIELD_BASIC_PROPERTIES_TYPE = "type";
+  static final String FIELD_BASIC_PROPERTIES_USERID = "userId";
+  static final String FIELD_BASIC_PROPERTIES_APPID = "appId";
 
   static final Schema SCHEMA_KEY = SchemaBuilder.struct()
       .name("com.github.jcustenborder.kafka.connect.rabbitmq.MessageKey")
@@ -213,7 +213,7 @@ class MessageConverter {
 
         if (!FIELD_LOOKUP.containsKey(headerValue.getClass())) {
           throw new DataException(
-              String.format("Could not determine the type for field '%' type '%'", kvp.getKey(), headerValue.getClass().getName())
+              String.format("Could not determine the type for field '%s' type '%s'", kvp.getKey(), headerValue.getClass().getName())
           );
         } else {
           field = FIELD_LOOKUP.get(headerValue.getClass());
