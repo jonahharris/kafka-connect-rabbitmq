@@ -18,6 +18,7 @@ package com.github.jcustenborder.kafka.connect.rabbitmq;
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.BasicProperties;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.LongString;
 import com.rabbitmq.client.impl.LongStringHelper;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.Struct;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -110,6 +112,16 @@ public class MessageConverterTest {
 
   @TestFactory
   public Stream<DynamicTest> headers() {
+    final List<LongString> listHeader = new ArrayList<>();
+    listHeader.add(LongStringHelper.asLongString("1"));
+    listHeader.add(LongStringHelper.asLongString("2"));
+    listHeader.add(LongStringHelper.asLongString("3"));
+    listHeader.add(LongStringHelper.asLongString("4"));
+    final List<String> listHeaderValue = new ArrayList<>();
+    listHeaderValue.add("1");
+    listHeaderValue.add("2");
+    listHeaderValue.add("3");
+    listHeaderValue.add("4");
     final List<HeaderTestCase> tests = Arrays.asList(
         HeaderTestCase.of(Byte.valueOf("1"), Schema.Type.INT8.toString().toLowerCase(), Byte.valueOf("1")),
         HeaderTestCase.of(Short.valueOf("1"), Schema.Type.INT16.toString().toLowerCase(), Short.valueOf("1")),
@@ -119,7 +131,8 @@ public class MessageConverterTest {
         HeaderTestCase.of(Double.valueOf("1"), Schema.Type.FLOAT64.toString().toLowerCase(), Double.valueOf("1")),
         HeaderTestCase.of("1", Schema.Type.STRING.toString().toLowerCase(), "1"),
         HeaderTestCase.of(LongStringHelper.asLongString("1"), Schema.Type.STRING.toString().toLowerCase(), "1"),
-        HeaderTestCase.of(new Date(1500691965123L), "timestamp", new Date(1500691965123L))
+        HeaderTestCase.of(new Date(1500691965123L), "timestamp", new Date(1500691965123L)),
+        HeaderTestCase.of(listHeader, "array", listHeaderValue)
     );
 
     return tests.stream().map(test -> dynamicTest(test.toString(), () -> {

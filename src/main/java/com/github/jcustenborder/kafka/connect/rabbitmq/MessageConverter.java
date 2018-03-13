@@ -28,9 +28,11 @@ import org.apache.kafka.connect.errors.DataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 class MessageConverter {
@@ -69,7 +71,8 @@ class MessageConverter {
         .field("type", SchemaBuilder.string().doc("Used to define the type for the HeaderValue. " +
             "This will define the corresponding field which will contain the value in it's original type.").build()
         )
-        .field("timestamp", Timestamp.builder().optional().doc("Storage for when the `type` field is set to `timestamp`. Null otherwise.").build());
+        .field("timestamp", Timestamp.builder().optional().doc("Storage for when the `type` field is set to `timestamp`. Null otherwise.").build())
+        .field("array", SchemaBuilder.array(Schema.STRING_SCHEMA).optional().doc("Storage for when the `type` field is set to `array`. Null otherwise.").build());
 
     for (Schema.Type v : Schema.Type.values()) {
       if (Schema.Type.ARRAY == v || Schema.Type.MAP == v || Schema.Type.STRUCT == v) {
@@ -192,6 +195,7 @@ class MessageConverter {
     fieldLookup.put(Float.class, Schema.Type.FLOAT32.name().toLowerCase());
     fieldLookup.put(Double.class, Schema.Type.FLOAT64.name().toLowerCase());
     fieldLookup.put(Boolean.class, Schema.Type.BOOLEAN.name().toLowerCase());
+    fieldLookup.put(ArrayList.class, Schema.Type.ARRAY.name().toLowerCase());
     fieldLookup.put(Date.class, "timestamp");
     FIELD_LOOKUP = ImmutableMap.copyOf(fieldLookup);
   }
@@ -207,6 +211,13 @@ class MessageConverter {
 
         if (kvp.getValue() instanceof LongString) {
           headerValue = kvp.getValue().toString();
+        } else if (kvp.getValue() instanceof List) {
+          final List<LongString> list = (List<LongString>) kvp.getValue();
+          final List<String> values = new ArrayList<>(list.size());
+          for (LongString l : list) {
+            values.add(l.toString());
+          }
+          headerValue = values;
         } else {
           headerValue = kvp.getValue();
         }
