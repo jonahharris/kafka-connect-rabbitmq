@@ -11,7 +11,7 @@
     <artifactId>kafka-connect-rabbitmq</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <name>kafka-connect-rabbitmq</name>
-    <description>A Kafka Connect connector receiving data from rabbitmq.</description>
+    <description>A Kafka Connect connector reading and writing data from RabbitMQ.</description>
     <url>https://github.com/jcustenborder/kafka-connect-rabbitmq</url>
     <inceptionYear>2017</inceptionYear>
     <licenses>
@@ -55,4 +55,40 @@
             <version>${connect-utils.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-connect-maven-plugin</artifactId>
+                <version>0.9.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>kafka-connect</goal>
+                        </goals>
+                        <configuration>
+                            <ownerUsername>jcustenborder</ownerUsername>
+                            <confluentControlCenterIntegration>true</confluentControlCenterIntegration>
+                            <documentationUrl>https://jcustenborder.github.io/kafka-connect-documentation/</documentationUrl>
+                            <ownerName>Jeremy Custenborder</ownerName>
+                            <dockerNamespace>jcustenborder</dockerNamespace>
+                            <dockerName>kafka-connect-docker</dockerName>
+                            <pluginTypes>
+                                <pluginType>sink</pluginType>
+                                <pluginType>source</pluginType>
+                                <pluginType>transform</pluginType>
+                            </pluginTypes>
+                            <tags>
+                                <tag>RabbitMQ</tag>
+                                <tag>Messaging</tag>
+                            </tags>
+                            <title>Kafka Connect RabbitMQ</title>
+                            <supportUrl>${pom.issueManagement.url}</supportUrl>
+                            <supportSummary>Support provided through community involvement.</supportSummary>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
