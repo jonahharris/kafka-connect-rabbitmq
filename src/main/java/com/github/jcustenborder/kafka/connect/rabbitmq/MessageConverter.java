@@ -223,9 +223,10 @@ class MessageConverter {
         }
 
         if (!FIELD_LOOKUP.containsKey(headerValue.getClass())) {
-          throw new DataException(
-              String.format("Could not determine the type for field '%s' type '%s'", kvp.getKey(), headerValue.getClass().getName())
+          log.warn(
+              String.format("Could not determine the type for field '%s' type '%s', skipping", kvp.getKey(), headerValue.getClass().getName())
           );
+          continue;
         } else {
           field = FIELD_LOOKUP.get(headerValue.getClass());
         }
