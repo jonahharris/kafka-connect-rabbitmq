@@ -67,7 +67,7 @@ public class RabbitMQSinkTask extends SinkTask {
     this.config = new RabbitMQSinkConnectorConfig(settings);
     ConnectionFactory connectionFactory = this.config.connectionFactory();
     try {
-      log.info("Opening connection to {}:{}/{}", this.config.host, this.config.port, this.config.virtualHost);
+      log.info("Opening connection to {}:{}/{} (SSL: {})", this.config.host, this.config.port, this.config.virtualHost, this.config.useSsl);
       this.connection = connectionFactory.newConnection();
     } catch (IOException | TimeoutException e) {
       throw new ConnectException(e);

@@ -136,11 +136,12 @@ class RabbitMQConnectorConfig extends AbstractConfig {
     connectionFactory.setTopologyRecoveryEnabled(this.topologyRecoveryEnabled);
     connectionFactory.setNetworkRecoveryInterval(this.networkRecoveryInterval);
     connectionFactory.setPort(this.port);
-    try {
-      connectionFactory.useSslProtocol();
-    } catch (NoSuchAlgorithmException | KeyManagementException e) {
-      e.printStackTrace();
-    }
+    if (this.useSsl)
+      try {
+        connectionFactory.useSslProtocol();
+      } catch (NoSuchAlgorithmException | KeyManagementException e) {
+        e.printStackTrace();
+      }
 
     return connectionFactory;
   }
