@@ -9,7 +9,7 @@
         <version>1.0.0</version>
     </parent>
     <artifactId>kafka-connect-rabbitmq</artifactId>
-    <version>0.0.2-headers</version>
+    <version>0.0.3-tls</version>
     <name>kafka-connect-rabbitmq</name>
     <description>A Kafka Connect connector reading and writing data from RabbitMQ.</description>
     <url>https://github.com/jcustenborder/kafka-connect-rabbitmq</url>
