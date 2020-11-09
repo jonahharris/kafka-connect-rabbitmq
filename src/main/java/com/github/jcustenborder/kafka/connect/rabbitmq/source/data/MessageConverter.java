@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jcustenborder.kafka.connect.rabbitmq;
+package com.github.jcustenborder.kafka.connect.rabbitmq.source.data;
 
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.AMQP;
@@ -24,18 +24,19 @@ import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaBuilder;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.data.Timestamp;
-import org.apache.kafka.connect.errors.DataException;
+import org.apache.kafka.connect.header.ConnectHeaders;
+import org.apache.kafka.connect.header.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-class MessageConverter {
+public class MessageConverter implements SourceMessageConverter<Struct, Struct> {
   private static final Logger log = LoggerFactory.getLogger(MessageConverter.class);
   static final String FIELD_ENVELOPE_DELIVERYTAG = "deliveryTag";
   static final String FIELD_ENVELOPE_ISREDELIVER = "isRedeliver";
@@ -51,7 +52,6 @@ class MessageConverter {
       .field(FIELD_ENVELOPE_EXCHANGE, SchemaBuilder.string().optional().doc("The name of the exchange included in this parameter envelope. See `Envelope.getExchange() <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/Envelope.html#getExchange-->`_"))
       .field(FIELD_ENVELOPE_ROUTINGKEY, SchemaBuilder.string().optional().doc("The routing key included in this parameter envelope. See `Envelope.getRoutingKey() <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/Envelope.html#getRoutingKey-->`_").build())
       .build();
-
 
   static Struct envelope(Envelope envelope) {
     return new Struct(SCHEMA_ENVELOPE)
@@ -223,9 +223,10 @@ class MessageConverter {
         }
 
         if (!FIELD_LOOKUP.containsKey(headerValue.getClass())) {
-          throw new DataException(
-              String.format("Could not determine the type for field '%s' type '%s'", kvp.getKey(), headerValue.getClass().getName())
+          log.warn(
+              String.format("Could not determine the type for field '%s' type '%s', skipping", kvp.getKey(), headerValue.getClass().getName())
           );
+          continue;
         } else {
           field = FIELD_LOOKUP.get(headerValue.getClass());
         }
@@ -279,17 +280,33 @@ class MessageConverter {
       .field(FIELD_MESSAGE_BODY, SchemaBuilder.bytes().doc("The value body (opaque, client-specific byte array)").build())
       .build();
 
-  static Struct value(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] body) {
-    return new Struct(SCHEMA_VALUE)
+  @Override
+  public Struct value(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] body) {
+    return new Struct(valueSchema())
         .put(FIELD_MESSAGE_CONSUMERTAG, consumerTag)
         .put(FIELD_MESSAGE_ENVELOPE, envelope(envelope))
         .put(FIELD_MESSAGE_BASICPROPERTIES, basicProperties(basicProperties))
         .put(FIELD_MESSAGE_BODY, body);
   }
 
-  static Struct key(AMQP.BasicProperties basicProperties) {
-    return new Struct(SCHEMA_KEY)
+  @Override
+  public Schema valueSchema() {
+    return SCHEMA_VALUE;
+  }
+
+  @Override
+  public Struct key(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] body) {
+    return new Struct(keySchema())
         .put(FIELD_BASIC_PROPERTIES_MESSAGEID, basicProperties.getMessageId());
   }
 
+  @Override
+  public Schema keySchema() {
+    return SCHEMA_KEY;
+  }
+
+  @Override
+  public Headers headers(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] body) {
+    return new ConnectHeaders();
+  }
 }

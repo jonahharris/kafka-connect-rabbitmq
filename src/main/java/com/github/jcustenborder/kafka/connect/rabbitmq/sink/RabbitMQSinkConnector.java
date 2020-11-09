@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.jcustenborder.kafka.connect.rabbitmq;
+package com.github.jcustenborder.kafka.connect.rabbitmq.sink;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import com.github.jcustenborder.kafka.connect.utils.config.Description;
 public class RabbitMQSinkConnector extends SinkConnector {
   Map<String, String> settings;
   RabbitMQSinkConnectorConfig config;
-  
+
 
 
   @Override
