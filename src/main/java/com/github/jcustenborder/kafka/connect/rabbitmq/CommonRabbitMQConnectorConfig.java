@@ -19,9 +19,12 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
-class RabbitMQConnectorConfig extends AbstractConfig {
+public abstract class CommonRabbitMQConnectorConfig extends AbstractConfig {
+
   public static final String USERNAME_CONFIG = "rabbitmq.username";
   public static final String PASSWORD_CONFIG = "rabbitmq.password";
   public static final String VIRTUAL_HOST_CONFIG = "rabbitmq.virtual.host";
@@ -36,6 +39,7 @@ class RabbitMQConnectorConfig extends AbstractConfig {
   public static final String NETWORK_RECOVERY_INTERVAL_CONFIG = "rabbitmq.network.recovery.interval.ms";
   public static final String HOST_CONFIG = "rabbitmq.host";
   public static final String PORT_CONFIG = "rabbitmq.port";
+  public static final String USE_SSL = "rabbitmq.ssl";
   static final String HOST_DOC = "The RabbitMQ host to connect to. See `ConnectionFactory.setHost(java.lang.String) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setHost-java.lang.String->`_";
   static final String USERNAME_DOC = "The username to authenticate to RabbitMQ with. See `ConnectionFactory.setUsername(java.lang.String) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setUsername-java.lang.String->`_";
   static final String PASSWORD_DOC = "The password to authenticate to RabbitMQ with. See `ConnectionFactory.setPassword(java.lang.String) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setPassword-java.lang.String->`_";
@@ -58,6 +62,7 @@ class RabbitMQConnectorConfig extends AbstractConfig {
   static final String TOPOLOGY_RECOVERY_ENABLED_DOC = "Enables or disables topology recovery. See `ConnectionFactory.setTopologyRecoveryEnabled(boolean) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setTopologyRecoveryEnabled-boolean->`_";
   static final String NETWORK_RECOVERY_INTERVAL_DOC = "See `ConnectionFactory.setNetworkRecoveryInterval(long) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setNetworkRecoveryInterval-long->`_";
   static final String PORT_DOC = "The RabbitMQ port to connect to. See `ConnectionFactory.setPort(int) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setPort-int->`_";
+  static final String USE_SSL_DOC = "Enable SSL/TLS";
   public final String username;
   public final String password;
   public final String virtualHost;
@@ -72,10 +77,10 @@ class RabbitMQConnectorConfig extends AbstractConfig {
   public final long networkRecoveryInterval;
   public final String host;
   public final int port;
+  public final boolean useSsl;
   public final ConnectionFactory connectionFactory;
 
-
-  public RabbitMQConnectorConfig(ConfigDef definition, Map<?, ?> originals) {
+  public CommonRabbitMQConnectorConfig(ConfigDef definition, Map<?, ?> originals) {
     super(definition, originals);
     this.username = this.getString(USERNAME_CONFIG);
     this.password = this.getString(PASSWORD_CONFIG);
@@ -91,7 +96,7 @@ class RabbitMQConnectorConfig extends AbstractConfig {
     this.networkRecoveryInterval = this.getInt(NETWORK_RECOVERY_INTERVAL_CONFIG);
     this.host = this.getString(HOST_CONFIG);
     this.port = this.getInt(PORT_CONFIG);
-
+    this.useSsl = this.getBoolean(USE_SSL);
     this.connectionFactory = connectionFactory();
   }
 
@@ -110,11 +115,13 @@ class RabbitMQConnectorConfig extends AbstractConfig {
         .define(AUTOMATIC_RECOVERY_ENABLED_CONFIG, ConfigDef.Type.BOOLEAN, true, ConfigDef.Importance.LOW, AUTOMATIC_RECOVERY_ENABLED_DOC)
         .define(TOPOLOGY_RECOVERY_ENABLED_CONFIG, ConfigDef.Type.BOOLEAN, true, ConfigDef.Importance.LOW, TOPOLOGY_RECOVERY_ENABLED_DOC)
         .define(NETWORK_RECOVERY_INTERVAL_CONFIG, ConfigDef.Type.INT, 10000, ConfigDef.Importance.LOW, NETWORK_RECOVERY_INTERVAL_DOC)
-        .define(PORT_CONFIG, ConfigDef.Type.INT, ConnectionFactory.DEFAULT_AMQP_PORT, ConfigDef.Importance.MEDIUM, PORT_DOC);
+        .define(PORT_CONFIG, ConfigDef.Type.INT, ConnectionFactory.DEFAULT_AMQP_PORT, ConfigDef.Importance.MEDIUM, PORT_DOC)
+        .define(USE_SSL, ConfigDef.Type.BOOLEAN, false, ConfigDef.Importance.HIGH, USE_SSL_DOC);
   }
 
-  final ConnectionFactory connectionFactory() {
+  public final ConnectionFactory connectionFactory() {
     ConnectionFactory connectionFactory = new ConnectionFactory();
+
     connectionFactory.setHost(this.host);
     connectionFactory.setUsername(this.username);
     connectionFactory.setPassword(this.password);
@@ -128,9 +135,15 @@ class RabbitMQConnectorConfig extends AbstractConfig {
     connectionFactory.setAutomaticRecoveryEnabled(this.automaticRecoveryEnabled);
     connectionFactory.setTopologyRecoveryEnabled(this.topologyRecoveryEnabled);
     connectionFactory.setNetworkRecoveryInterval(this.networkRecoveryInterval);
+
     connectionFactory.setPort(this.port);
+    if (this.useSsl)
+      try {
+        connectionFactory.useSslProtocol();
+      } catch (NoSuchAlgorithmException | KeyManagementException e) {
+        e.printStackTrace();
+      }
 
     return connectionFactory;
   }
-
 }

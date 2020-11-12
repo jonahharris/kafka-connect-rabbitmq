@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jcustenborder.kafka.connect.rabbitmq;
+package com.github.jcustenborder.kafka.connect.rabbitmq.source;
 
+import com.github.jcustenborder.kafka.connect.rabbitmq.source.data.SourceRecordBuilder;
 import com.github.jcustenborder.kafka.connect.utils.data.SourceRecordConcurrentLinkedDeque;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Consumer;
@@ -24,18 +25,17 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 class ConnectConsumer implements Consumer {
-  private static final Logger log = LoggerFactory.getLogger(ConnectConsumer.class);
-  final SourceRecordConcurrentLinkedDeque records;
-  final RabbitMQSourceConnectorConfig config;
-  final SourceRecordBuilder sourceRecordBuilder;
 
-  ConnectConsumer(SourceRecordConcurrentLinkedDeque records, RabbitMQSourceConnectorConfig config) {
+  private static final Logger log = LoggerFactory.getLogger(ConnectConsumer.class);
+  private final SourceRecordConcurrentLinkedDeque records;
+  private final SourceRecordBuilder sourceRecordBuilder;
+
+  ConnectConsumer(SourceRecordConcurrentLinkedDeque records, RabbitMQSourceConnectorConfig config) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     this.records = records;
-    this.config = config;
-    this.sourceRecordBuilder = new SourceRecordBuilder(this.config);
+    this.sourceRecordBuilder = new SourceRecordBuilder(config);
   }
 
   @Override
@@ -49,7 +49,7 @@ class ConnectConsumer implements Consumer {
   }
 
   @Override
-  public void handleCancel(String s) throws IOException {
+  public void handleCancel(String s) {
     log.trace("handleCancel({})", s);
   }
 
@@ -60,16 +60,14 @@ class ConnectConsumer implements Consumer {
 
   @Override
   public void handleRecoverOk(String s) {
-    log.trace("handleRecoverOk({}, {})", s);
+    log.trace("handleRecoverOk({})", s);
   }
 
   @Override
-  public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] bytes) throws IOException {
+  public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] bytes) {
     log.trace("handleDelivery({})", consumerTag);
 
     SourceRecord sourceRecord = this.sourceRecordBuilder.sourceRecord(consumerTag, envelope, basicProperties, bytes);
     this.records.add(sourceRecord);
   }
-
-
 }

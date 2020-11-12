@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #
 # Copyright © 2016 Jeremy Custenborder (jcustenborder@gmail.com)
 #
@@ -14,14 +15,10 @@
 # limitations under the License.
 #
 
-bootstrap.servers=kafka:9092
-key.converter=io.confluent.connect.avro.AvroConverter
-key.converter.schema.registry.url=http://schema-registry:8081
-value.converter=io.confluent.connect.avro.AvroConverter
-value.converter.schema.registry.url=http://schema-registry:8081
-internal.key.converter=org.apache.kafka.connect.json.JsonConverter
-internal.value.converter=org.apache.kafka.connect.json.JsonConverter
-internal.key.converter.schemas.enable=false
-internal.value.converter.schemas.enable=false
-offset.storage.file.filename=/tmp/connect.offsets
-plugin.path=target/kafka-connect-target/usr/share/kafka-connect
+kafkacat -b localhost:9092 -t rabbitmq.test -C \
+  -f '\nKey (%K bytes): %k
+  Value (%S bytes): %s
+  Timestamp: %T
+  Partition: %p
+  Offset: %o
+  Headers: %h\n'

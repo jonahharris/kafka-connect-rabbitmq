@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jcustenborder.kafka.connect.rabbitmq;
+package com.github.jcustenborder.kafka.connect.rabbitmq.source;
 
 import com.github.jcustenborder.kafka.connect.utils.VersionUtil;
 import com.github.jcustenborder.kafka.connect.utils.data.SourceRecordConcurrentLinkedDeque;
@@ -34,28 +34,31 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public class RabbitMQSourceTask extends SourceTask {
+
   private static final Logger log = LoggerFactory.getLogger(RabbitMQSourceTask.class);
-  RabbitMQSourceConnectorConfig config;
-  SourceRecordConcurrentLinkedDeque records;
-  ConnectConsumer consumer;
+  private SourceRecordConcurrentLinkedDeque records;
+  private Channel channel;
+  private Connection connection;
 
   @Override
   public String version() {
     return VersionUtil.version(this.getClass());
   }
 
-  Channel channel;
-  Connection connection;
-
   @Override
   public void start(Map<String, String> settings) {
-    this.config = new RabbitMQSourceConnectorConfig(settings);
+    RabbitMQSourceConnectorConfig config = new RabbitMQSourceConnectorConfig(settings);
     this.records = new SourceRecordConcurrentLinkedDeque();
-    this.consumer = new ConnectConsumer(this.records, this.config);
-
-    ConnectionFactory connectionFactory = this.config.connectionFactory();
+    ConnectConsumer consumer;
     try {
-      log.info("Opening connection to {}:{}/{}", this.config.host, this.config.port, this.config.virtualHost);
+      consumer = new ConnectConsumer(this.records, config);
+    } catch (Exception e) {
+      throw new ConnectException(e);
+    }
+
+    ConnectionFactory connectionFactory = config.connectionFactory();
+    try {
+      log.info("Opening connection to {}:{}/{} (SSL: {})", config.host, config.port, config.virtualHost, config.useSsl);
       this.connection = connectionFactory.newConnection();
     } catch (IOException | TimeoutException e) {
       throw new ConnectException(e);
@@ -64,16 +67,20 @@ public class RabbitMQSourceTask extends SourceTask {
     try {
       log.info("Creating Channel");
       this.channel = this.connection.createChannel();
+      log.info("Declaring queues");
+      for (String queue : config.queues) {
+        this.channel.queueDeclare(queue, true, false, false, null);
+      }
     } catch (IOException e) {
       throw new ConnectException(e);
     }
 
-    for (String queue : this.config.queues) {
+    for (String queue : config.queues) {
       try {
         log.info("Starting consumer");
-        this.channel.basicConsume(queue, this.consumer);
-        log.info("Setting channel.basicQos({}, {});", this.config.prefetchCount, this.config.prefetchGlobal);
-        this.channel.basicQos(this.config.prefetchCount, this.config.prefetchGlobal);
+        this.channel.basicConsume(queue, consumer);
+        log.info("Setting channel.basicQos({}, {});", config.prefetchCount, config.prefetchGlobal);
+        this.channel.basicQos(config.prefetchCount, config.prefetchGlobal);
       } catch (IOException ex) {
         throw new ConnectException(ex);
       }
@@ -82,7 +89,7 @@ public class RabbitMQSourceTask extends SourceTask {
   }
 
   @Override
-  public void commitRecord(SourceRecord record) throws InterruptedException {
+  public void commitRecord(SourceRecord record) {
     Long deliveryTag = (Long) record.sourceOffset().get("deliveryTag");
     try {
       this.channel.basicAck(deliveryTag, false);

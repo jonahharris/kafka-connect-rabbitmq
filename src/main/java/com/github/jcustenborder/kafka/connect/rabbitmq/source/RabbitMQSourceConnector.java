@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jcustenborder.kafka.connect.rabbitmq;
+package com.github.jcustenborder.kafka.connect.rabbitmq.source;
 
 import com.github.jcustenborder.kafka.connect.utils.VersionUtil;
 import com.github.jcustenborder.kafka.connect.utils.config.Description;
+import com.github.jcustenborder.kafka.connect.utils.config.TaskConfigs;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Description("Connector is used to read from a RabbitMQ Queue or Topic.")
 public class RabbitMQSourceConnector extends SourceConnector {
-  Map<String, String> settings;
-  RabbitMQSourceConnectorConfig config;
+
+  private Map<String, String> settings;
 
   @Override
   public String version() {
@@ -37,7 +37,6 @@ public class RabbitMQSourceConnector extends SourceConnector {
 
   @Override
   public void start(Map<String, String> settings) {
-    this.config = new RabbitMQSourceConnectorConfig(settings);
     this.settings = settings;
   }
 
@@ -48,17 +47,11 @@ public class RabbitMQSourceConnector extends SourceConnector {
 
   @Override
   public List<Map<String, String>> taskConfigs(int maxTasks) {
-    List<Map<String, String>> taskConfigs = new ArrayList<>();
-    for (int i = 0; i < maxTasks; i++) {
-      taskConfigs.add(this.settings);
-    }
-    return taskConfigs;
+    return TaskConfigs.multiple(this.settings, maxTasks);
   }
 
   @Override
-  public void stop() {
-
-  }
+  public void stop() { }
 
   @Override
   public ConfigDef config() {

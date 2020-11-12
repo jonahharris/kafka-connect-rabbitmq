@@ -4,14 +4,15 @@
     <parent>
         <groupId>com.github.jcustenborder.kafka.connect</groupId>
         <artifactId>kafka-connect-parent</artifactId>
-        <version>1.0.0</version>
+        <version>2.4.0</version>
     </parent>
     <artifactId>kafka-connect-rabbitmq</artifactId>
-    <version>0.0.3</version>
+    <version>0.1.0</version>
     <name>kafka-connect-rabbitmq</name>
     <description>A Kafka Connect connector reading and writing data from RabbitMQ.</description>
-    <url>https://github.com/jcustenborder/kafka-connect-rabbitmq</url>
+    <url>https://github.com/jonahharris/kafka-connect-rabbitmq</url>
     <inceptionYear>2017</inceptionYear>
+
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -19,6 +20,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
     <developers>
         <developer>
             <id>jcustenborder</id>
@@ -28,19 +30,31 @@
                 <role>Committer</role>
             </roles>
         </developer>
+        <developer>
+            <id>insidn</id>
+            <name>Jan Uyttenhove</name>
+            <url>https://github.com/insidin</url>
+            <roles>
+                <role>Committer</role>
+            </roles>
+        </developer>
     </developers>
+
     <scm>
-        <connection>scm:git:https://github.com/jcustenborder/kafka-connect-rabbitmq.git</connection>
-        <developerConnection>scm:git:git@github.com:jcustenborder/kafka-connect-rabbitmq.git</developerConnection>
-        <url>https://github.com/jcustenborder/kafka-connect-rabbitmq</url>
+        <connection>scm:git:https://github.com/jonahharris/kafka-connect-rabbitmq.git</connection>
+        <developerConnection>scm:git:git@github.com:jonahharris/kafka-connect-rabbitmq.git</developerConnection>
+        <url>https://github.com/jonahharris/kafka-connect-rabbitmq</url>
     </scm>
+
     <issueManagement>
         <system>github</system>
-        <url>https://github.com/jcustenborder/kafka-connect-rabbitmq/issues</url>
+        <url>https://github.com/jonahharris/kafka-connect-rabbitmq/issues</url>
     </issueManagement>
+
     <properties>
-        <rabbitmq.version>5.7.1</rabbitmq.version>
+        <rabbitmq.version>5.10.0</rabbitmq.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.rabbitmq</groupId>
@@ -52,15 +66,34 @@
             <artifactId>connect-utils-testing-data</artifactId>
             <version>${connect-utils.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>5.1.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <detectJavaApiLink>false</detectJavaApiLink>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>io.confluent</groupId>
                 <artifactId>kafka-connect-maven-plugin</artifactId>
-                <version>0.9.0</version>
+                <version>0.11.2</version>
                 <executions>
                     <execution>
+                        <id>hub</id>
                         <goals>
                             <goal>kafka-connect</goal>
                         </goals>
@@ -71,17 +104,17 @@
                             <ownerName>Jeremy Custenborder</ownerName>
                             <dockerNamespace>jcustenborder</dockerNamespace>
                             <dockerName>kafka-connect-docker</dockerName>
-                            <pluginTypes>
-                                <pluginType>sink</pluginType>
-                                <pluginType>source</pluginType>
-                                <pluginType>transform</pluginType>
-                            </pluginTypes>
+                            <componentTypes>
+                                <componentType>sink</componentType>
+                                <componentType>source</componentType>
+                                <componentType>transform</componentType>
+                            </componentTypes>
                             <tags>
                                 <tag>RabbitMQ</tag>
                                 <tag>Messaging</tag>
                             </tags>
                             <title>Kafka Connect RabbitMQ</title>
-                            <supportUrl>${pom.issueManagement.url}</supportUrl>
+                            <supportUrl>${project.issueManagement.url}</supportUrl>
                             <supportSummary>Support provided through community involvement.</supportSummary>
                         </configuration>
                     </execution>

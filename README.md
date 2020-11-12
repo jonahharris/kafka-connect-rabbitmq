@@ -63,6 +63,13 @@ The username to authenticate to RabbitMQ with. See `ConnectionFactory.setUsernam
 
 *Default Value:* /
 
+Converter to compose the Kafka message.
+##### `message.converter`
+*Importance:* Medium
+
+*Type:* String
+
+*Default Value:* com.github.jcustenborder.kafka.connect.rabbitmq.source.data.MessageConverter
 
 The virtual host to use when connecting to the broker. See `ConnectionFactory.setVirtualHost(java.lang.String) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setVirtualHost-java.lang.String->`_
 ##### `rabbitmq.port`
@@ -182,7 +189,7 @@ This configuration is used typically along with [standalone mode](http://docs.co
 
 ```properties
 name=RabbitMQSourceConnector1
-connector.class=com.github.jcustenborder.kafka.connect.rabbitmq.RabbitMQSourceConnector
+connector.class=com.github.jcustenborder.kafka.connect.rabbitmq.source.RabbitMQSourceConnector
 tasks.max=1
 kafka.topic=< Required Configuration >
 rabbitmq.queue=< Required Configuration >
@@ -198,7 +205,7 @@ post the configuration to one the distributed connect worker(s).
 {
   "config" : {
     "name" : "RabbitMQSourceConnector1",
-    "connector.class" : "com.github.jcustenborder.kafka.connect.rabbitmq.RabbitMQSourceConnector",
+    "connector.class" : "com.github.jcustenborder.kafka.connect.rabbitmq.source.RabbitMQSourceConnector",
     "tasks.max" : "1",
     "kafka.topic" : "< Required Configuration >",
     "rabbitmq.queue" : "< Required Configuration >"
@@ -391,7 +398,7 @@ This configuration is used typically along with [standalone mode](http://docs.co
 
 ```properties
 name=RabbitMQSinkConnector1
-connector.class=com.github.jcustenborder.kafka.connect.rabbitmq.RabbitMQSinkConnector
+connector.class=com.github.jcustenborder.kafka.connect.rabbitmq.sink.RabbitMQSinkConnector
 tasks.max=1
 topics=< Required Configuration >
 rabbitmq.exchange=< Required Configuration >
@@ -409,145 +416,12 @@ post the configuration to one the distributed connect worker(s).
 {
   "config" : {
     "name" : "RabbitMQSinkConnector1",
-    "connector.class" : "com.github.jcustenborder.kafka.connect.rabbitmq.RabbitMQSinkConnector",
+    "connector.class" : "com.github.jcustenborder.kafka.connect.rabbitmq.sink.RabbitMQSinkConnector",
     "tasks.max" : "1",
     "topics" : "< Required Configuration >",
     "rabbitmq.exchange" : "< Required Configuration >",
     "rabbitmq.routing.key" : "< Required Configuration >"
   }
-}
-```
-
-Use curl to post the configuration to one of the Kafka Connect Workers. Change `http://localhost:8083/` the the endpoint of
-one of your Kafka Connect worker(s).
-
-Create a new instance.
-```bash
-curl -s -X POST -H 'Content-Type: application/json' --data @connector.json http://localhost:8083/connectors
-```
-
-Update an existing instance.
-```bash
-curl -s -X PUT -H 'Content-Type: application/json' --data @connector.json http://localhost:8083/connectors/TestSinkConnector1/config
-```
-
-
-
-# Transformations
-
-
-## ExtractHeader(Key)
-
-This transformation is used to extract a header from the message and use it as a key.
-
-
-
-
-
-
-### Configuration
-
-##### `header.name`
-*Importance:* High
-
-*Type:* String
-
-
-Header name.
-
-#### Examples
-
-##### Standalone Example
-
-This configuration is used typically along with [standalone mode](http://docs.confluent.io/current/connect/concepts.html#standalone-workers).
-
-```properties
-name=Connector1
-connector.class=org.apache.kafka.some.SourceConnector
-tasks.max=1
-transforms=tran
-transforms.tran.type=com.github.jcustenborder.kafka.connect.rabbitmq.ExtractHeader$Key
-transforms.tran.header.name=< Required Configuration >
-```
-
-##### Distributed Example
-
-This configuration is used typically along with [distributed mode](http://docs.confluent.io/current/connect/concepts.html#distributed-workers).
-Write the following json to `connector.json`, configure all of the required values, and use the command below to
-post the configuration to one the distributed connect worker(s).
-
-```json
-{
-  "name" : "Connector1",
-  "connector.class" : "org.apache.kafka.some.SourceConnector",
-  "transforms" : "tran",
-  "transforms.tran.type" : "com.github.jcustenborder.kafka.connect.rabbitmq.ExtractHeader$Key",
-  "transforms.tran.header.name" : "< Required Configuration >"
-}
-```
-
-Use curl to post the configuration to one of the Kafka Connect Workers. Change `http://localhost:8083/` the the endpoint of
-one of your Kafka Connect worker(s).
-
-Create a new instance.
-```bash
-curl -s -X POST -H 'Content-Type: application/json' --data @connector.json http://localhost:8083/connectors
-```
-
-Update an existing instance.
-```bash
-curl -s -X PUT -H 'Content-Type: application/json' --data @connector.json http://localhost:8083/connectors/TestSinkConnector1/config
-```
-
-
-
-## ExtractHeader(Value)
-
-This transformation is used to extract a header from the message and use it as a value.
-
-
-
-
-
-
-### Configuration
-
-##### `header.name`
-*Importance:* High
-
-*Type:* String
-
-
-Header name.
-
-#### Examples
-
-##### Standalone Example
-
-This configuration is used typically along with [standalone mode](http://docs.confluent.io/current/connect/concepts.html#standalone-workers).
-
-```properties
-name=Connector1
-connector.class=org.apache.kafka.some.SourceConnector
-tasks.max=1
-transforms=tran
-transforms.tran.type=com.github.jcustenborder.kafka.connect.rabbitmq.ExtractHeader$Value
-transforms.tran.header.name=< Required Configuration >
-```
-
-##### Distributed Example
-
-This configuration is used typically along with [distributed mode](http://docs.confluent.io/current/connect/concepts.html#distributed-workers).
-Write the following json to `connector.json`, configure all of the required values, and use the command below to
-post the configuration to one the distributed connect worker(s).
-
-```json
-{
-  "name" : "Connector1",
-  "connector.class" : "org.apache.kafka.some.SourceConnector",
-  "transforms" : "tran",
-  "transforms.tran.type" : "com.github.jcustenborder.kafka.connect.rabbitmq.ExtractHeader$Value",
-  "transforms.tran.header.name" : "< Required Configuration >"
 }
 ```
 
