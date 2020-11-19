@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jcustenborder.kafka.connect.rabbitmq.source;
+package com.github.themeetgroup.kafka.connect.rabbitmq.source;
 
-import com.github.jcustenborder.kafka.connect.rabbitmq.CommonRabbitMQConnectorConfig;
+import com.github.themeetgroup.kafka.connect.rabbitmq.CommonRabbitMQConnectorConfig;
 import org.apache.kafka.common.config.ConfigDef;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class RabbitMQSourceConnectorConfig extends CommonRabbitMQConnectorConfig
 
   public static final String MESSAGE_CONVERTER_CLASSNAME_CONF = "message.converter";
   public static final String MESSAGE_CONVERTER_CLASSNAME_DOC = "Converter to compose the Kafka message. Optional, defaults to " +
-      "com.github.jcustenborder.kafka.connect.rabbitmq.source.data.MessageConverter";
+      "com.github.themeetgroup.kafka.connect.rabbitmq.source.data.MessageConverter";
 
   public final String kafkaTopic;
   public final List<String> queues;

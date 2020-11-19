@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jcustenborder.kafka.connect.rabbitmq.source;
+package com.github.themeetgroup.kafka.connect.rabbitmq.source;
 
-import com.github.jcustenborder.kafka.connect.rabbitmq.source.data.SourceRecordBuilder;
+import com.github.themeetgroup.kafka.connect.rabbitmq.source.data.SourceRecordBuilder;
 import com.github.jcustenborder.kafka.connect.utils.data.SourceRecordConcurrentLinkedDeque;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Consumer;

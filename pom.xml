@@ -100,11 +100,9 @@
                             <goal>kafka-connect</goal>
                         </goals>
                         <configuration>
-                            <ownerUsername>jcustenborder</ownerUsername>
-                            <confluentControlCenterIntegration>true</confluentControlCenterIntegration>
-                            <documentationUrl>https://jcustenborder.github.io/kafka-connect-documentation/</documentationUrl>
-                            <ownerName>Jeremy Custenborder</ownerName>
-                            <dockerNamespace>jcustenborder</dockerNamespace>
+                            <ownerUsername>themeetgroup</ownerUsername>
+                            <ownerName>The Meet Group</ownerName>
+                            <dockerNamespace>themeetgroup</dockerNamespace>
                             <dockerName>kafka-connect-docker</dockerName>
                             <componentTypes>
                                 <componentType>sink</componentType>
@@ -116,8 +114,6 @@
                                 <tag>Messaging</tag>
                             </tags>
                             <title>Kafka Connect RabbitMQ</title>
-                            <supportUrl>${project.issueManagement.url}</supportUrl>
-                            <supportSummary>Support provided through community involvement.</supportSummary>
                         </configuration>
                     </execution>
                 </executions>

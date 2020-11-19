@@ -69,7 +69,7 @@ Converter to compose the Kafka message.
 
 *Type:* String
 
-*Default Value:* com.github.jcustenborder.kafka.connect.rabbitmq.source.data.MessageConverter
+*Default Value:* com.github.themeetgroup.kafka.connect.rabbitmq.source.data.MessageConverter
 
 The virtual host to use when connecting to the broker. See `ConnectionFactory.setVirtualHost(java.lang.String) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setVirtualHost-java.lang.String->`_
 ##### `rabbitmq.port`
@@ -189,7 +189,7 @@ This configuration is used typically along with [standalone mode](http://docs.co
 
 ```properties
 name=RabbitMQSourceConnector1
-connector.class=com.github.jcustenborder.kafka.connect.rabbitmq.source.RabbitMQSourceConnector
+connector.class=com.github.themeetgroup.kafka.connect.rabbitmq.source.RabbitMQSourceConnector
 tasks.max=1
 kafka.topic=< Required Configuration >
 rabbitmq.queue=< Required Configuration >
@@ -205,7 +205,7 @@ post the configuration to one the distributed connect worker(s).
 {
   "config" : {
     "name" : "RabbitMQSourceConnector1",
-    "connector.class" : "com.github.jcustenborder.kafka.connect.rabbitmq.source.RabbitMQSourceConnector",
+    "connector.class" : "com.github.themeetgroup.kafka.connect.rabbitmq.source.RabbitMQSourceConnector",
     "tasks.max" : "1",
     "kafka.topic" : "< Required Configuration >",
     "rabbitmq.queue" : "< Required Configuration >"
@@ -398,7 +398,7 @@ This configuration is used typically along with [standalone mode](http://docs.co
 
 ```properties
 name=RabbitMQSinkConnector1
-connector.class=com.github.jcustenborder.kafka.connect.rabbitmq.sink.RabbitMQSinkConnector
+connector.class=com.github.themeetgroup.kafka.connect.rabbitmq.sink.RabbitMQSinkConnector
 tasks.max=1
 topics=< Required Configuration >
 rabbitmq.exchange=< Required Configuration >
@@ -416,7 +416,7 @@ post the configuration to one the distributed connect worker(s).
 {
   "config" : {
     "name" : "RabbitMQSinkConnector1",
-    "connector.class" : "com.github.jcustenborder.kafka.connect.rabbitmq.sink.RabbitMQSinkConnector",
+    "connector.class" : "com.github.themeetgroup.kafka.connect.rabbitmq.sink.RabbitMQSinkConnector",
     "tasks.max" : "1",
     "topics" : "< Required Configuration >",
     "rabbitmq.exchange" : "< Required Configuration >",
