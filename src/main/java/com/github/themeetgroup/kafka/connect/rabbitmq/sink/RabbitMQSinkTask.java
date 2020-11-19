@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.jcustenborder.kafka.connect.rabbitmq.sink;
+package com.github.themeetgroup.kafka.connect.rabbitmq.sink;
 
 import com.github.jcustenborder.kafka.connect.utils.VersionUtil;
 import com.rabbitmq.client.Channel;
@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import static com.github.jcustenborder.kafka.connect.rabbitmq.sink.RabbitMQSinkConnectorConfig.HEADER_CONF;
+import static com.github.themeetgroup.kafka.connect.rabbitmq.sink.RabbitMQSinkConnectorConfig.HEADER_CONF;
 
 public class RabbitMQSinkTask extends SinkTask {
   private static final Logger log = LoggerFactory.getLogger(RabbitMQSinkTask.class);

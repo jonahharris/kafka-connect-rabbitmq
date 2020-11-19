@@ -1,4 +1,4 @@
-package com.github.jcustenborder.kafka.connect.rabbitmq.source.data;
+package com.github.themeetgroup.kafka.connect.rabbitmq.source.data;
 
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.transforms.Transformation;

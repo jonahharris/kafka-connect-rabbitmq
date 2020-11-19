@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.jcustenborder.kafka.connect.rabbitmq.sink;
+package com.github.themeetgroup.kafka.connect.rabbitmq.sink;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.jcustenborder.kafka.connect.rabbitmq.sink;
+package com.github.themeetgroup.kafka.connect.rabbitmq.sink;
 
 import java.util.Map;
 
-import com.github.jcustenborder.kafka.connect.rabbitmq.CommonRabbitMQConnectorConfig;
+import com.github.themeetgroup.kafka.connect.rabbitmq.CommonRabbitMQConnectorConfig;
 import org.apache.kafka.common.config.ConfigDef;
 
 import com.github.jcustenborder.kafka.connect.utils.template.StructTemplate;
