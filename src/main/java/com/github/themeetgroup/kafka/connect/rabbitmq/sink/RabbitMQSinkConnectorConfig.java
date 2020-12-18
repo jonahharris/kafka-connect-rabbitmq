@@ -24,6 +24,7 @@ import org.apache.kafka.common.config.ConfigDef;
 import com.github.jcustenborder.kafka.connect.utils.template.StructTemplate;
 
 public class RabbitMQSinkConnectorConfig extends CommonRabbitMQConnectorConfig {
+
   static final String KAFKA_TOPIC_TEMPLATE = "kafkaTopicTemplate";
   public static final String TOPIC_CONF = "topics";
   static final String TOPIC_DOC = "Kafka topic to read the messages from.";
@@ -36,14 +37,17 @@ public class RabbitMQSinkConnectorConfig extends CommonRabbitMQConnectorConfig {
   public static final String ROUTING_KEY_CONF = "rabbitmq.routing.key";
   static final String ROUTING_KEY_DOC = "routing key used for publishing the messages.";
 
+  public static final String FORMAT_CONF = "rabbitmq.format";
+  public static final String FORMAT_CONF_DOC = "The format type to use when writing data to rabbitMQ";
+  public static final String FORMAT_CONF_DEFAULT = "bytes";
 
   public static final String HEADER_CONF = "rabbitmq.headers";
   public static final String HEADER_CONF_DOC = "Headers to set for outbounf messages. Set with `headername1`:`headervalue1`,`headername2`:`headervalue2`";
-    //TODO: include other config variables here
 
   public final StructTemplate kafkaTopic;
   public final String exchange;
   public final String routingKey;
+  public final String format;
 
   public RabbitMQSinkConnectorConfig(Map<String, String> settings) {
     super(config(), settings);
@@ -52,16 +56,15 @@ public class RabbitMQSinkConnectorConfig extends CommonRabbitMQConnectorConfig {
     this.kafkaTopic.addTemplate(KAFKA_TOPIC_TEMPLATE, kafkaTopicFormat);
     this.exchange = this.getString(EXCHANGE_CONF);
     this.routingKey = this.getString(ROUTING_KEY_CONF);
+    this.format = this.getString(FORMAT_CONF);
   }
 
   public static ConfigDef config() {
     return CommonRabbitMQConnectorConfig.config()
-        .define(TOPIC_CONF, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, TOPIC_DOC)
-        .define(EXCHANGE_CONF, ConfigDef.Type.STRING, "", ConfigDef.Importance.MEDIUM, EXCHANGE_DOC)
-        .define(ROUTING_KEY_CONF, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, ROUTING_KEY_DOC)
-        .define(HEADER_CONF, ConfigDef.Type.STRING, null, null, ConfigDef.Importance.LOW, HEADER_CONF_DOC);
-
-
+            .define(TOPIC_CONF, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, TOPIC_DOC)
+            .define(EXCHANGE_CONF, ConfigDef.Type.STRING, "", ConfigDef.Importance.MEDIUM, EXCHANGE_DOC)
+            .define(ROUTING_KEY_CONF, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, ROUTING_KEY_DOC)
+            .define(FORMAT_CONF, ConfigDef.Type.STRING, FORMAT_CONF_DEFAULT, ConfigDef.Importance.HIGH, FORMAT_CONF_DOC)
+            .define(HEADER_CONF, ConfigDef.Type.STRING, null, null, ConfigDef.Importance.LOW, HEADER_CONF_DOC);
   }
-
 }

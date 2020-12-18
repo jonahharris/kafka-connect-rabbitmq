@@ -22,4 +22,4 @@ export KAFKA_DEBUG='y'
 set -e
 
 mvn clean package
-connect-standalone config/connect-avro-docker.properties config/RabbitMQSourceConnector.properties
+connect-standalone config/connect-avro-docker.properties config/RabbitMQSinkConnector.properties

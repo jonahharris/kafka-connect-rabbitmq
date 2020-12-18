@@ -262,6 +262,16 @@ exchange to publish the messages on.
 
 
 routing key used for publishing the messages.
+
+##### `rabbitmq.format`
+*Importance:* High
+
+*Type:* String
+
+*Default Value:* bytes
+
+The format type to use when writing data to RabbitMQ (currently supported values are bytes, json)
+
 ##### `topics`
 *Importance:* High
 

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-kafka-topics --create --topic rabbitmq.test --bootstrap-server 127.0.0.1:9092
+kafka-topics --create --topic rabbitmq-test --bootstrap-server 127.0.0.1:9092
