@@ -63,15 +63,21 @@ The username to authenticate to RabbitMQ with. See `ConnectionFactory.setUsernam
 
 *Default Value:* /
 
-Converter to compose the Kafka message.
+The virtual host to use when connecting to the broker. See `ConnectionFactory.setVirtualHost(java.lang.String) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setVirtualHost-java.lang.String->`_
+
 ##### `message.converter`
 *Importance:* Medium
 
 *Type:* String
 
 *Default Value:* com.github.themeetgroup.kafka.connect.rabbitmq.source.data.MessageConverter
+*Other allowed values*: 
+- com.github.themeetgroup.kafka.connect.rabbitmq.source.data.BytesSourceMessageConverter
+- com.github.themeetgroup.kafka.connect.rabbitmq.source.data.StringSourceMessageConverter
 
-The virtual host to use when connecting to the broker. See `ConnectionFactory.setVirtualHost(java.lang.String) <https://www.rabbitmq.com/releases/rabbitmq-java-client/current-javadoc/com/rabbitmq/client/ConnectionFactory.html#setVirtualHost-java.lang.String->`_
+Converter to compose the Kafka message.
+
+
 ##### `rabbitmq.port`
 *Importance:* Medium
 
