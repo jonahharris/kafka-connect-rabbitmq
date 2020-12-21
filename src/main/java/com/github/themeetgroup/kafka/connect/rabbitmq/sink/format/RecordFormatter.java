@@ -28,7 +28,9 @@ public interface RecordFormatter {
       return new BytesRecordFormatter();
     } else if ("json".equals(type)) {
       return new JsonRecordFormatter();
+    } else if ("avro".equals(type)) {
+      return new AvroFormatter();
     }
-    throw new ConnectException("The provided format type is not one of 'bytes' or 'json', but: " + type);
+    throw new ConnectException("The provided format type is not one of 'bytes', 'json' or 'avro', but: " + type);
   }
 }

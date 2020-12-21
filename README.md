@@ -71,6 +71,7 @@ The virtual host to use when connecting to the broker. See `ConnectionFactory.se
 *Type:* String
 
 *Default Value:* com.github.themeetgroup.kafka.connect.rabbitmq.source.data.MessageConverter
+
 *Other allowed values*: 
 - com.github.themeetgroup.kafka.connect.rabbitmq.source.data.BytesSourceMessageConverter
 - com.github.themeetgroup.kafka.connect.rabbitmq.source.data.StringSourceMessageConverter
@@ -270,7 +271,11 @@ routing key used for publishing the messages.
 
 *Default Value:* bytes
 
-The format type to use when writing data to RabbitMQ (currently supported values are bytes, json)
+*Other allowed values*: 
+- json
+- avro (non Confluent avro)
+
+The format type to use when writing data to RabbitMQ
 
 ##### `topics`
 *Importance:* High
