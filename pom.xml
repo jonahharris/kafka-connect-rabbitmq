@@ -71,10 +71,28 @@
         <rabbitmq.version>5.10.0</rabbitmq.version>
         <mockito.version>3.3.0</mockito.version>
         <kafka.version>2.6.0</kafka.version>
-        <confluent.version>6.0.1</confluent.version>
+        <confluent.version>6.0.0</confluent.version>
+        <!-- Keep this version in sync with version used in Kafka releases -->
+        <jackson.version>2.8.5</jackson.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-connect-avro-converter</artifactId>
+            <version>${confluent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>${rabbitmq.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>connect-json</artifactId>
@@ -85,36 +103,6 @@
             <artifactId>connect-runtime</artifactId>
             <version>${kafka.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-schema-registry</artifactId>
-            <version>${confluent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-connect-avro-converter</artifactId>
-            <version>${confluent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-avro-serializer</artifactId>
-            <version>${confluent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>${rabbitmq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jcustenborder.kafka.connect</groupId>
-            <artifactId>connect-utils-testing-data</artifactId>
-            <version>${connect-utils.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>1.10.1</version>
         </dependency>
 
     </dependencies>
