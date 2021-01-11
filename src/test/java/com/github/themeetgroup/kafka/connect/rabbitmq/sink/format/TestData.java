@@ -13,19 +13,31 @@ public class TestData {
         .doc("Payment schema used in unit tests")
         .field("id", SchemaBuilder.int32().build())
         .field("isCashPayment", SchemaBuilder.bool().build())
+        .field("currency", SchemaBuilder.string()
+            .parameter(
+                "io.confluent.connect.avro.Enum",
+                "com.github.themeetgroup.kafka.connect.rabbitmq.sink.format.Currency")
+            .parameter(
+                "io.confluent.connect.avro.Enum.EURO",
+                "EURO")
+            .parameter(
+                "io.confluent.connect.avro.Enum.DOLLAR",
+                "DOLLAR")
+            .build())
         .field("sender", SchemaBuilder.string().build())
         .field("comment", SchemaBuilder.string().optional().build())
         .build();
   }
 
-  public static Struct paymentValue(int id, boolean isCashPayment, String sender) {
-    return paymentValue(id, isCashPayment, sender, null);
+  public static Struct paymentValue(int id, boolean isCashPayment, Currency currency, String sender) {
+    return paymentValue(id, isCashPayment, currency, sender, null);
   }
 
-  public static Struct paymentValue(int id, boolean isCashPayment, String sender, String comment) {
+  public static Struct paymentValue(int id, boolean isCashPayment, Currency currency, String sender, String comment) {
     return new Struct(paymentSchema())
         .put("id", id)
         .put("isCashPayment", isCashPayment)
+        .put("currency", currency.toString())
         .put("sender", sender)
         .put("comment", comment);
   }

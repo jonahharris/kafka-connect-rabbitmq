@@ -17,6 +17,7 @@
 package com.github.themeetgroup.kafka.connect.rabbitmq.sink.format;
 
 import io.confluent.connect.avro.AvroData;
+import io.confluent.connect.avro.AvroDataConfig;
 import io.confluent.kafka.serializers.NonRecordContainer;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumWriter;
@@ -31,6 +32,8 @@ import org.apache.kafka.connect.sink.SinkRecord;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AvroFormatter implements RecordFormatter {
 
@@ -38,7 +41,11 @@ public class AvroFormatter implements RecordFormatter {
   private final EncoderFactory encoderFactory;
 
   public AvroFormatter() {
-    avroData = new AvroData(10);
+    Map<String, Object> avroDataConfigMap  = new HashMap<String, Object>() {{
+      put(AvroDataConfig.ENHANCED_AVRO_SCHEMA_SUPPORT_CONFIG, true);
+      put(AvroDataConfig.SCHEMAS_CACHE_SIZE_CONFIG, 10);
+    }};
+    avroData = new AvroData(new AvroDataConfig(avroDataConfigMap));
     encoderFactory = EncoderFactory.get();
   }
 

@@ -3,6 +3,7 @@ package com.github.themeetgroup.kafka.connect.rabbitmq.sink.format;
 import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.BinaryDecoder;
@@ -26,13 +27,16 @@ import static com.github.themeetgroup.kafka.connect.rabbitmq.sink.format.TestDat
 import static com.github.themeetgroup.kafka.connect.rabbitmq.sink.format.TestData.paymentSchema;
 import static com.github.themeetgroup.kafka.connect.rabbitmq.sink.format.TestData.paymentValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AvroFormatterTest {
 
   private final RecordFormatter avroRecordFormatter = new AvroFormatter();
   private final DecoderFactory decoderFactory = DecoderFactory.get();
   private final KafkaAvroDeserializer kafkaAvroDeserializer = new KafkaAvroDeserializer(new MockSchemaRegistryClient());
+  private final PlainAvroDeserializer<Payment> plainAvroDeserializer = new PlainAvroDeserializer<>(Payment.class);
 
   private Schema schema;
 
@@ -43,8 +47,8 @@ class AvroFormatterTest {
   }
 
   @Test
-  void givenAStruct_whenFormattingWithAvroRecordFormatter_expectStructToJson() throws IOException {
-    Struct payment = paymentValue(1, true, "testSender");
+  void givenAStruct_whenFormattingWithAvroRecordFormatter_expectStructToAvro() throws IOException {
+    Struct payment = paymentValue(1, true, Currency.EURO, "testSender");
     SinkRecord sinkRecord = createSinkRecord(paymentSchema(), payment);
 
     byte[] output = avroRecordFormatter.format(sinkRecord);
@@ -53,6 +57,14 @@ class AvroFormatterTest {
     assertEquals(1, record.get("id"));
     assertEquals(true, record.get("isCashPayment"));
     assertEquals(new Utf8("testSender"), record.get("sender"));
+    assertEquals(new GenericData.EnumSymbol(Currency.SCHEMA$, "EURO"), record.get("currency"));
+
+    Payment specificOutput = plainAvroDeserializer.deserialize(null, output);
+    assertEquals(1, specificOutput.getId());
+    assertTrue(specificOutput.getIsCashPayment());
+    assertEquals("testSender", specificOutput.getSender().toString());
+    assertNull(specificOutput.getComment());
+    assertEquals(Currency.EURO, specificOutput.getCurrency());
   }
 
   // The "avro" formatter is serializing data in NON-confluent avro, meaning the first bytes do not contain the schema id
@@ -62,7 +74,7 @@ class AvroFormatterTest {
   // after putting confluent avro serialized data on your topic
   @Test
   void validateExceptionIsThrown_whenTryingToDeserializeOutputWithKafkaAvroDeserializer() {
-    Struct payment = paymentValue(1, true, "testSender");
+    Struct payment = paymentValue(1, true, Currency.EURO, "testSender");
     SinkRecord sinkRecord = createSinkRecord(paymentSchema(), payment);
 
     byte[] output = avroRecordFormatter.format(sinkRecord);

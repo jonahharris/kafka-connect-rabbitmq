@@ -54,17 +54,18 @@ class JsonRecordFormatterTest {
 
   @Test
   void givenAStruct_whenFormattingWithJsonRecordFormatter_expectStructToJson() throws IOException {
-    Struct payment = paymentValue(1, true, "testSender");
+    Struct payment = paymentValue(1, true, Currency.EURO, "testSender");
     SinkRecord sinkRecord = createSinkRecord(TestData.paymentSchema(), payment);
 
     byte[] output = jsonRecordFormatter.format(sinkRecord);
 
     Map map = objectMapper.readValue(output, Map.class);
-    assertEquals(4, map.size());
+    assertEquals(5, map.size());
     assertEquals(1, map.get("id"));
     assertEquals(true, map.get("isCashPayment"));
     assertEquals("testSender", map.get("sender"));
     assertNull(map.get("comment"));
+    assertEquals("EURO", map.get("currency"));
   }
 
   @Test

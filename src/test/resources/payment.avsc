@@ -5,6 +5,7 @@
     "fields": [
         {"name": "id", "type": "int"},
         {"name": "isCashPayment", "type": "boolean"},
+        {"name": "currency", "type": { "type": "enum", "name": "Currency", "symbols" : ["EURO","DOLLAR"]}},
         {"name": "sender", "type": "string"},
         {"name": "comment", "type": ["null", "string"], "default": null}
     ]

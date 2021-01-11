@@ -31,7 +31,7 @@ class BytesRecordFormatterTest {
   // This is also the default behaviour when not specifying a formatter
   @Test
   void givenAStruct_whenFormattingWithBytesRecordFormatter_expectDataException() {
-    Struct payment = paymentValue(1, true, "testSender");
+    Struct payment = paymentValue(1, true, Currency.EURO, "testSender");
     SinkRecord record = createSinkRecord(TestData.paymentSchema(), payment);
 
     assertThrows(DataException.class, () -> bytesRecordFormatter.format(record));
