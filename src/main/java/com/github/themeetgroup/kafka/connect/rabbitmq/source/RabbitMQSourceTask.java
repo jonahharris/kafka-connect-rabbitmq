@@ -49,43 +49,25 @@ public class RabbitMQSourceTask extends SourceTask {
   public void start(Map<String, String> settings) {
     RabbitMQSourceConnectorConfig config = new RabbitMQSourceConnectorConfig(settings);
     this.records = new SourceRecordConcurrentLinkedDeque();
-    ConnectConsumer consumer;
+
     try {
-      consumer = new ConnectConsumer(this.records, config);
+      ConnectionFactory connectionFactory = config.connectionFactory();
+      log.info("Opening connection to {}:{}/{} (SSL: {})", config.host, config.port, config.virtualHost, config.useSsl);
+      this.connection = connectionFactory.newConnection();
+
+      log.info("Creating Channel");
+      this.channel = this.connection.createChannel();
+
+      for (String queue : config.queueToTopicMap.keySet()) {
+        log.info("Declaring queue {} & starting consumer for queue", queue);
+        ConnectConsumer consumer = new ConnectConsumer(this.records, config, queue);
+        this.channel.queueDeclare(queue, true, false, false, null);
+        this.channel.basicConsume(queue, consumer);
+        this.channel.basicQos(config.prefetchCount, config.prefetchGlobal);
+      }
     } catch (Exception e) {
       throw new ConnectException(e);
     }
-
-    ConnectionFactory connectionFactory = config.connectionFactory();
-    try {
-      log.info("Opening connection to {}:{}/{} (SSL: {})", config.host, config.port, config.virtualHost, config.useSsl);
-      this.connection = connectionFactory.newConnection();
-    } catch (IOException | TimeoutException e) {
-      throw new ConnectException(e);
-    }
-
-    try {
-      log.info("Creating Channel");
-      this.channel = this.connection.createChannel();
-      log.info("Declaring queues");
-      for (String queue : config.queues) {
-        this.channel.queueDeclare(queue, true, false, false, null);
-      }
-    } catch (IOException e) {
-      throw new ConnectException(e);
-    }
-
-    for (String queue : config.queues) {
-      try {
-        log.info("Starting consumer");
-        this.channel.basicConsume(queue, consumer);
-        log.info("Setting channel.basicQos({}, {});", config.prefetchCount, config.prefetchGlobal);
-        this.channel.basicQos(config.prefetchCount, config.prefetchGlobal);
-      } catch (IOException ex) {
-        throw new ConnectException(ex);
-      }
-    }
-
   }
 
   @Override

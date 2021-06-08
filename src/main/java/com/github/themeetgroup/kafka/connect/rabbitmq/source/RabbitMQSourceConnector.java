@@ -29,6 +29,7 @@ import java.util.Map;
 public class RabbitMQSourceConnector extends SourceConnector {
 
   private Map<String, String> settings;
+  private RabbitMQSourceConnectorConfig config;
 
   @Override
   public String version() {
@@ -38,6 +39,7 @@ public class RabbitMQSourceConnector extends SourceConnector {
   @Override
   public void start(Map<String, String> settings) {
     this.settings = settings;
+    this.config = new RabbitMQSourceConnectorConfig(settings);
   }
 
   @Override
