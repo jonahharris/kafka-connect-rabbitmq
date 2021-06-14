@@ -21,9 +21,16 @@ import com.github.jcustenborder.kafka.connect.utils.config.TaskConfigs;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
+import org.apache.kafka.connect.util.ConnectorUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.github.themeetgroup.kafka.connect.rabbitmq.source.RabbitMQSourceConnectorConfig.QUEUE_TOPIC_MAPPING_CONF;
 
 @Description("Connector is used to read from a RabbitMQ Queue or Topic.")
 public class RabbitMQSourceConnector extends SourceConnector {
@@ -49,7 +56,22 @@ public class RabbitMQSourceConnector extends SourceConnector {
 
   @Override
   public List<Map<String, String>> taskConfigs(int maxTasks) {
-    return TaskConfigs.multiple(this.settings, maxTasks);
+    String queueToTopicMapping = settings.get(QUEUE_TOPIC_MAPPING_CONF);
+    if (queueToTopicMapping == null || queueToTopicMapping.isEmpty()) {
+      return TaskConfigs.multiple(this.settings, maxTasks);
+    }
+
+    List<String> listQueueToTopicMapping = Arrays.stream(queueToTopicMapping.split(",")).collect(Collectors.toList());
+    List<List<String>> partitionedQueueToTopicMapping = ConnectorUtils.groupPartitions(listQueueToTopicMapping, maxTasks);
+
+    List<Map<String, String>> connectorConfig = new ArrayList<>();
+    for (List<String> partition : partitionedQueueToTopicMapping) {
+      Map<String, String> taskConfig = new HashMap<>(settings);
+      taskConfig.put(QUEUE_TOPIC_MAPPING_CONF, String.join(",", partition));
+      connectorConfig.add(taskConfig);
+    }
+
+    return connectorConfig;
   }
 
   @Override

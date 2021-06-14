@@ -89,7 +89,7 @@ public class RabbitMQSourceConnectorConfig extends CommonRabbitMQConnectorConfig
         .define(PREFETCH_COUNT_CONF, ConfigDef.Type.INT, 0, ConfigDef.Importance.MEDIUM, PREFETCH_COUNT_DOC)
         .define(PREFETCH_GLOBAL_CONF, ConfigDef.Type.BOOLEAN, false, ConfigDef.Importance.MEDIUM, PREFETCH_GLOBAL_DOC)
         .define(QUEUE_CONF, ConfigDef.Type.LIST, new ArrayList<>(), ConfigDef.Importance.HIGH, QUEUE_DOC)
-        .define(MESSAGE_CONVERTER_CLASSNAME_CONF, ConfigDef.Type.STRING, ConfigDef.Importance.MEDIUM, MESSAGE_CONVERTER_CLASSNAME_DOC)
+        .define(MESSAGE_CONVERTER_CLASSNAME_CONF, ConfigDef.Type.STRING, null, ConfigDef.Importance.MEDIUM, MESSAGE_CONVERTER_CLASSNAME_DOC)
         .define(QUEUE_TOPIC_MAPPING_CONF, ConfigDef.Type.LIST, new ArrayList<>(), ConfigDef.Importance.HIGH, QUEUE_TOPIC_MAPPING_DOC);
   }
 }
