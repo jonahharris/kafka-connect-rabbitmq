@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-kafkacat -b localhost:9092 -t rabbitmq.test -C \
+kafkacat -b localhost:9092 -t topic1 -C \
   -f '\nKey (%K bytes): %k
   Value (%S bytes): %s
   Timestamp: %T

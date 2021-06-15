@@ -22,10 +22,12 @@ import com.rabbitmq.client.Envelope;
 import org.apache.kafka.common.utils.SystemTime;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.connect.data.Schema;
+import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.header.Headers;
 import org.apache.kafka.connect.source.SourceRecord;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 
 public class SourceRecordBuilder {
 
@@ -41,13 +43,16 @@ public class SourceRecordBuilder {
         (SourceMessageConverter) (Class.forName(messageConverterClassName).getConstructor().newInstance());
   }
 
-  public SourceRecord sourceRecord(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] bytes) {
+  public SourceRecord sourceRecord(String queue, String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] bytes) {
     Object key = this.messageConverter.key(consumerTag, envelope, basicProperties, bytes);
     Schema keySchema = this.messageConverter.keySchema();
     Object value = this.messageConverter.value(consumerTag, envelope, basicProperties, bytes);
     Schema valueSchema = this.messageConverter.valueSchema();
     Headers headers = this.messageConverter.headers(consumerTag, envelope, basicProperties, bytes);
-    String topic = this.config.kafkaTopic;
+
+    String topic = Optional
+        .ofNullable(config.queueToTopicMap.get(queue))
+        .orElseThrow(() -> new ConnectException("There was no Kafka topic found for the consumed queue '" + queue + "'"));
 
     return new SourceRecord(
         ImmutableMap.of("routingKey", envelope.getRoutingKey()),
