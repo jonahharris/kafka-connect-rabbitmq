@@ -17,6 +17,7 @@
 package com.github.themeetgroup.kafka.connect.rabbitmq.sink;
 
 import com.github.jcustenborder.kafka.connect.utils.VersionUtil;
+import com.github.themeetgroup.kafka.connect.rabbitmq.sink.format.RecordFormatter;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -35,12 +36,12 @@ import java.util.concurrent.TimeoutException;
 import static com.github.themeetgroup.kafka.connect.rabbitmq.sink.RabbitMQSinkConnectorConfig.HEADER_CONF;
 
 public class RabbitMQSinkTask extends SinkTask {
+
   private static final Logger log = LoggerFactory.getLogger(RabbitMQSinkTask.class);
-  RabbitMQSinkConnectorConfig config;
-
-  Channel channel;
-  Connection connection;
-
+  private RabbitMQSinkConnectorConfig config;
+  private RecordFormatter recordFormatter;
+  private Channel channel;
+  private Connection connection;
 
   @Override
   public String version() {
@@ -51,12 +52,9 @@ public class RabbitMQSinkTask extends SinkTask {
   public void put(Collection<SinkRecord> sinkRecords) {
     for (SinkRecord record : sinkRecords) {
       log.trace("current sinkRecord value: " + record.value());
-      if (!(record.value() instanceof byte[])) {
-        throw new ConnectException("the value of the record has an invalid type (must be of type byte[])");
-      }
       try {
         channel.basicPublish(this.config.exchange, this.config.routingKey,
-              RabbitMQSinkHeaderParser.parse(config.getString(HEADER_CONF)), (byte[]) record.value());
+              RabbitMQSinkHeaderParser.parse(config.getString(HEADER_CONF)), recordFormatter.format(record));
       } catch (IOException e) {
         log.error("There was an error while publishing the outgoing message to RabbitMQ");
         throw new RetriableException(e);
@@ -67,6 +65,7 @@ public class RabbitMQSinkTask extends SinkTask {
   @Override
   public void start(Map<String, String> settings) {
     this.config = new RabbitMQSinkConnectorConfig(settings);
+    this.recordFormatter = RecordFormatter.getInstance(config.format);
     ConnectionFactory connectionFactory = this.config.connectionFactory();
     try {
       log.info("Opening connection to {}:{}/{} (SSL: {})", this.config.host, this.config.port, this.config.virtualHost, this.config.useSsl);

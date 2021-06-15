@@ -32,10 +32,14 @@ class ConnectConsumer implements Consumer {
   private static final Logger log = LoggerFactory.getLogger(ConnectConsumer.class);
   private final SourceRecordConcurrentLinkedDeque records;
   private final SourceRecordBuilder sourceRecordBuilder;
+  private final String queue;
 
-  ConnectConsumer(SourceRecordConcurrentLinkedDeque records, RabbitMQSourceConnectorConfig config) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+  ConnectConsumer(SourceRecordConcurrentLinkedDeque records,
+                  RabbitMQSourceConnectorConfig config,
+                  String queue) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     this.records = records;
     this.sourceRecordBuilder = new SourceRecordBuilder(config);
+    this.queue = queue;
   }
 
   @Override
@@ -67,7 +71,7 @@ class ConnectConsumer implements Consumer {
   public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] bytes) {
     log.trace("handleDelivery({})", consumerTag);
 
-    SourceRecord sourceRecord = this.sourceRecordBuilder.sourceRecord(consumerTag, envelope, basicProperties, bytes);
+    SourceRecord sourceRecord = this.sourceRecordBuilder.sourceRecord(queue, consumerTag, envelope, basicProperties, bytes);
     this.records.add(sourceRecord);
   }
 }
