@@ -49,10 +49,9 @@ public class RabbitMQSourceConnectorConfig extends CommonRabbitMQConnectorConfig
       "com.github.themeetgroup.kafka.connect.rabbitmq.source.data.MessageConverter";
 
   public static final String QUEUE_TOPIC_MAPPING_CONF = "rabbitmq.queue.topic.mapping";
-  public static final String QUEUE_TOPIC_MAPPING_DOC = "A comma separated list containing a mapping between a RabbitMQ queue and a Kafka topic. " +
-      "This setting is an alternative for the 'rabbitmq.queue' and 'kafka.topic' setting. This setting is mutual exclusive of the 'rabbitmq.queue' and 'kafka.topic' combination. " +
-      "When both settings are present. This combination of the original config will be used. " +
-      "example of mapping config: 'queue1:topic1,queue2:topic2'";
+  public static final String QUEUE_TOPIC_MAPPING_DOC = "A list containing a mapping between a RabbitMQ queue and a Kafka topic.\n" +
+      " This setting is an alternative for the 'rabbitmq.queue' and 'kafka.topic' setting.\n" +
+      "  When both settings are present. The 'rabbitmq.queue' and 'kafka.topic' will be used. Example of mapping config: 'queue1:topic1,queue2:topic2'";
 
   public final int prefetchCount;
   public final boolean prefetchGlobal;

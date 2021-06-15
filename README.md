@@ -27,6 +27,14 @@ Kafka topic to write the messages to.
 
 *Type:* List
 
+##### `rabbitmq.queue.topic.mapping`
+*Importance:* High
+
+*Type:* List
+
+A list containing a mapping between a RabbitMQ queue and a Kafka topic.
+ This setting is an alternative for the 'rabbitmq.queue' and 'kafka.topic' setting. This allows to use a single connector instance to have a many-to-many mapping, instead of only a many queues to one topic mapping. 
+  When both settings are present. The 'rabbitmq.queue' and 'kafka.topic' will be used. Example of mapping config: 'queue1:topic1,queue2:topic2'
 
 rabbitmq.queue
 ##### `rabbitmq.host`
