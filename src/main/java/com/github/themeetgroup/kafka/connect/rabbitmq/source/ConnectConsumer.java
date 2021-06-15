@@ -71,9 +71,6 @@ class ConnectConsumer implements Consumer {
   public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] bytes) {
     log.trace("handleDelivery({})", consumerTag);
 
-    log.info(envelope.toString());
-    log.info(basicProperties.toString());
-
     SourceRecord sourceRecord = this.sourceRecordBuilder.sourceRecord(queue, consumerTag, envelope, basicProperties, bytes);
     this.records.add(sourceRecord);
   }
