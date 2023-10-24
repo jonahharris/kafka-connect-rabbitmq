@@ -53,7 +53,7 @@
     </issueManagement>
 
     <properties>
-        <rabbitmq.version>5.10.0</rabbitmq.version>
+        <rabbitmq.version>5.18.0</rabbitmq.version>
         <mockito.version>3.3.0</mockito.version>
     </properties>
 
